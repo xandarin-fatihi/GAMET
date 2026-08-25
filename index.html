@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#fffaf1">
+  <meta name="description" content="Tahmisçi Game — kahveni al, oyunu seç.">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="48x48" href="assets/favicon-48.png">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon-180.png">
+  <link rel="stylesheet" href="styles/gamebox.css">
+  <title>Tahmisçi Game</title>
+</head>
+<body>
+  <header class="topbar">
+    <button type="button" class="brand" data-action="games-home" aria-label="Oyunlara dön">
+      <img src="assets/game-icon-master.png" alt="">
+      <span><b>Tahmisçi</b><small>GAME</small></span>
+    </button>
+    <div class="top-actions">
+      <span id="connectionBadge" class="status-dot">Yerel oyun</span>
+      <button type="button" id="installButton" class="header-action hidden">Yükle</button>
+      <button type="button" id="soundButton" class="icon-button" aria-label="Sesi aç veya kapat">♪</button>
+    </div>
+  </header>
+  <main id="app" class="app-shell" aria-live="polite"></main>
+
+  <template id="gamesView">
+    <section class="games-page">
+      <div class="games-intro"><p class="eyebrow">TAHMİSÇİ GAME</p><h1>Kahveni al, oyunu seç.</h1><p>Masadaki sohbete küçük bir oyun molası ekle.</p></div>
+      <section class="game-library" aria-label="Oyunlar">
+        <article class="featured-game">
+          <div class="featured-art"><img src="assets/game-icon-master.png" alt="Tahmisçi Game"></div>
+          <div class="featured-copy"><span class="ready-badge">OYUNA HAZIR</span><h2>İsim Şehir Hayvan</h2><p>2–8 Oyuncu · 90 Saniye</p><button type="button" class="primary compact" data-action="open-game">Oyuna Gir</button></div>
+        </article>
+        <div class="coming-grid">
+          <article class="coming-card"><span>◷</span><h3>Kelime Türetme</h3><small>Yakında</small></article>
+          <article class="coming-card"><span>♜</span><h3>Bilgi Yarışması</h3><small>Yakında</small></article>
+          <article class="coming-card"><span>✣</span><h3>Eşleşme</h3><small>Yakında</small></article>
+          <article class="coming-card"><span>⚄</span><h3>Şansını Dene</h3><small>Yakında</small></article>
+        </div>
+      </section>
+    </section>
+  </template>
+
+  <template id="accessView">
+    <section class="access-page">
+      <button type="button" class="back-link" data-action="games-home">← Oyunlara dön</button>
+      <div class="access-grid">
+        <article class="access-copy"><p class="eyebrow">İSİM ŞEHİR HAYVAN</p><h1>Masayı kur,<br>arkadaşlarını çağır.</h1><p>Bir oda oluştur veya arkadaşının paylaştığı altı haneli kodla masaya katıl.</p><div class="feature-row"><span>2–8 oyuncu</span><span>90 saniye</span><span>6 kategori</span></div></article>
+        <article class="join-card">
+          <div class="mini-brand"><img src="assets/game-icon-master.png" alt=""></div>
+          <label>Kullanıcı adın<input id="playerName" maxlength="20" autocomplete="nickname" autocapitalize="words" enterkeyhint="next" placeholder="Örn. Üzeyir"></label>
+          <button type="button" class="primary wide" data-action="create-room">Oda oluştur <span>→</span></button>
+          <div class="or"><span></span>veya<span></span></div>
+          <label>Oda kodu<input id="roomCode" maxlength="6" inputmode="text" autocapitalize="characters" enterkeyhint="go" placeholder="ABC123"></label>
+          <button type="button" class="secondary wide" data-action="join-room">Odaya katıl</button><p class="form-note" id="homeError"></p>
+        </article>
+      </div>
+    </section>
+  </template>
+
+  <template id="lobbyView">
+    <section class="room-head"><div><p class="eyebrow">OYUN ODASI</p><h1>Hazırlık Masası</h1><p>Oda kodu: <button class="room-code" data-action="copy-code"></button></p></div><button class="ghost" data-action="leave-room">Odadan çık</button></section>
+    <section class="lobby-grid">
+      <article class="surface pad"><div class="section-title"><div><p class="eyebrow">OYUNCULAR</p><h2>Masadakiler</h2></div><span class="count-badge" id="playerCount"></span></div><div id="playerList" class="player-list"></div><button id="addBot" class="secondary wide" data-action="add-bot">+ Demo oyuncu ekle</button></article>
+      <article class="surface pad letter-panel"><p class="eyebrow">HARF SEÇİMİ</p><h2 id="turnTitle">Sıra bekleniyor</h2><p id="turnHelp" class="muted"></p><div id="alphabet" class="alphabet"></div><div class="picked-letter" id="pickedLetter">?</div><button id="confirmLetter" class="primary wide" data-action="confirm-letter" disabled>Harfi kilitle</button><button id="readyButton" class="secondary wide hidden" data-action="toggle-ready">Hazırım</button><button id="startRound" class="primary wide hidden" data-action="start-round">Oyunu başlat</button></article>
+    </section>
+  </template>
+
+  <template id="roundView">
+    <section class="round-layout">
+      <header class="round-top"><span class="round-number">1. Tur</span><span class="letter-badge" id="roundLetter"></span><div class="timer" id="timer" aria-label="Kalan süre"><span class="clock-icon">◷</span><strong>01:30</strong></div></header>
+      <section class="answer-grid" id="answerGrid"></section>
+      <footer class="round-footer"><span id="saveState">Yanıtların saklanıyor.</span><button class="primary" data-action="finish">Tamamladım</button></footer>
+    </section>
+  </template>
+
+  <template id="resultsView">
+    <section class="results-head"><div><p class="eyebrow">TUR TAMAMLANDI</p><h1>Masadaki sonuçlar</h1><p class="muted">Aynı cevap 5, benzersiz cevap 10, boş veya harfle uyuşmayan cevap 0 puan.</p></div><div class="letter-stamp" id="resultLetter"></div></section>
+    <section class="surface results-table-wrap"><table class="results-table"><thead><tr><th>Sıra</th><th>Oyuncu</th><th>Tur puanı</th><th>Toplam</th></tr></thead><tbody id="scoreRows"></tbody></table></section>
+    <section class="result-actions"><button class="secondary" data-action="review">Cevapları gör</button><button id="nextRound" class="primary" data-action="next-round">Yeni tur →</button></section><section id="answerReview" class="surface pad hidden"></section>
+  </template>
+  <div id="toast" class="toast" role="status"></div>
+  <script src="scripts/game-state.js"></script><script src="scripts/gamebox.js"></script>
+</body>
+</html>
